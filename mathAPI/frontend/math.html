@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Microservice</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1c2620;
+      color: #e0f2f1;
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+
+    h1 {
+      color: #a5d6a7;
+      text-align: center;
+    }
+
+    section {
+      background-color: #263a2e;
+      padding: 1rem 1.5rem;
+      margin: 1.2rem 0;
+      border-radius: 8px;
+      box-shadow: 0 0 8px #00000033;
+    }
+
+    h2 {
+      color: #c8e6c9;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      border-radius: 4px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    input {
+      background-color: #1b2b20;
+      color: #ffffff;
+      border: 1px solid #4caf50;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-bottom: 0.5rem;
+    }
+
+    button:hover {
+      background-color: #66bb6a;
+    }
+
+    .result {
+      background-color: #2e3d30;
+      padding: 1rem;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Math Operations</h1>
+
+  <section>
+    <h2>Fibonacci</h2>
+    <input id="fibN" type="number" placeholder="Enter n">
+    <button onclick="fibonacci()">Calculate Fibonacci</button>
+  </section>
+
+  <section>
+    <h2>Power (x^y)</h2>
+    <input id="x" type="number" placeholder="Base x">
+    <input id="y" type="number" placeholder="Exponent y">
+    <button onclick="power()">Calculate x^y</button>
+  </section>
+
+  <section>
+    <h2>Factorial</h2>
+    <input id="factN" type="number" placeholder="Enter n">
+    <button onclick="factorial()">Calculate Factorial</button>
+  </section>
+
+  <div class="result" id="result">Result will appear here...</div>
+
+  <script>
+    const baseURL = 'http://127.0.0.1:8000';
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("⚠️ You must login first.");
+      window.location.href = "login.html";
+    }
+
+    function showResult(value) {
+      document.getElementById('result').innerText = `Result: ${value}`;
+    }
+
+    async function fibonacci() {
+      const n = document.getElementById('fibN').value;
+      const res = await fetch(`${baseURL}/api/v1/fibonacci/${n}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      showResult(data.result);
+    }
+
+    async function power() {
+      const x = document.getElementById('x').value;
+      const y = document.getElementById('y').value;
+
+      try {
+        const res = await fetch(`${baseURL}/api/v1/pow?x=${x}&y=${y}`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.result !== undefined) {
+          showResult(data.result);
+        } else {
+          throw new Error(data.detail || "Invalid response");
+        }
+      } catch (err) {
+        alert("❌ Power calculation failed.");
+        console.error(err);
+      }
+    }
+
+    async function factorial() {
+      const n = document.getElementById('factN').value;
+      const res = await fetch(`${baseURL}/api/v1/factorial?n=${n}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      showResult(data.result);
+    }
+  </script>
+</body>
+</html>

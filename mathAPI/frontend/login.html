@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Math Microservice</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1d2b1f;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 80px;
+    }
+
+    h1 {
+      color: #a5d6a7;
+    }
+
+    .login-box {
+      background-color: #2e3d30;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #00000055;
+      width: 300px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 1rem;
+      border-radius: 4px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    input {
+      background-color: #1b2b20;
+      color: #ffffff;
+      border: 1px solid #4caf50;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #66bb6a;
+    }
+  </style>
+</head>
+<body>
+  <h1>Math Microservice</h1>
+
+  <div class="login-box">
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+    <button onclick="login()">Log In</button>
+  </div>
+
+  <script>
+    const baseURL = 'http://127.0.0.1:8000';
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
+
+      try {
+        const res = await fetch(`${baseURL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString()
+        });
+
+        if (!res.ok) throw new Error("Login failed");
+
+        const data = await res.json();
+        localStorage.setItem("token", data.access_token);
+        alert("✅ Login successful");
+        window.location.href = "math.html";
+      } catch (err) {
+        alert("❌ Login failed.");
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>

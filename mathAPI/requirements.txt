@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+pydantic
+fastapi-jwt-auth
+python-multipart   # Form parsing
+PyJWT             # jwt.encode / jwt.decode
